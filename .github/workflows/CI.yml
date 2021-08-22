@@ -24,13 +24,10 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r requirements.txt
-    - name: Navigate to Source Directory
-      run: |
-        cd src
     - name: Migrate Apps and Databases
       run: |
-        python manage.py makemigrations
-        python manage.py migrate
+        cd src && python manage.py makemigrations
+        cd src && python manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test
