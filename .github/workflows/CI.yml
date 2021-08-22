@@ -30,5 +30,6 @@ jobs:
         python manage.py makemigrations
         python manage.py migrate
     - name: Run Tests
+      working-directory: ./src
       run: |
         python manage.py test
