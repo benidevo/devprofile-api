@@ -1,4 +1,4 @@
 web: gunicorn src.core.wsgi
-release: python manage.py makemigrations --noinput
-release: python manage.py collectstatic --noinput
-release: python manage.py migrate --noinput
+release: cd src && python manage.py makemigrations --noinput
+release: cd src && python manage.py collectstatic --noinput
+release: cd src && python manage.py migrate --noinput
