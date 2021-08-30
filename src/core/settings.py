@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', '@07*^v$w)1_tt(thg(e8n**vm#edxz%7n&t1ksw%2#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-# DEBUG = True
+DEBUG = True
 
 ALLOWED_HOSTS = ['devprofile-api.herokuapp.com', 'localhost']
 
@@ -136,7 +136,15 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'src/core/static'),
+]
+
+# Media settings
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -150,4 +158,21 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'optimaldevss@gmail.com'
 EMAIL_HOST_PASSWORD = 'Test4321'
 
-django_heroku.settings(locals())
+# Heroku: Update database configuration from $DATABASE_URL.
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# The URL to use when referring to static files (where they will be served from)
+STATIC_URL = '/static/'
+
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
