@@ -6,7 +6,6 @@ from utils.Utils import Mailer
 from developer.models import DeveloperProfile
 from recruiter.models import RecruiterProfile
 from utils.response import Response
-from decouple import config
 
 
 def generate_key(num_digit):
@@ -71,3 +70,4 @@ class SignUp(generics.GenericAPIView):
         user.save()
 
         return Response(data=dict(first_name=first_name, last_name=last_name, email=email, otp=otp), status=status.HTTP_201_CREATED)
+        
