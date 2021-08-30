@@ -138,7 +138,7 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'src/core/static'),
+    os.path.join(BASE_DIR, 'core/static'),
 ]
 
 # Media settings
