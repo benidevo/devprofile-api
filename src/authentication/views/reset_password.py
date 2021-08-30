@@ -1,4 +1,3 @@
-from decouple import config
 from authentication.models import CustomUser
 from rest_framework import status
 from rest_framework.views import APIView
