@@ -8,9 +8,9 @@ from authentication.views.reset_password import ResetPassword
 from authentication.views.change_password import ChangePassword
 
 urlpatterns = [
-  path('signup', SignUp.as_view(), name='signup'),
+  path('change-password', ChangePassword.as_view(), name='change-password'),
+  path('reset-password', ResetPassword.as_view(), name='reset-password'),
   path('login', Login.as_view(), name='login'),
   path('token', VerifyToken.as_view(), name='token'),
-  path('reset-password', ResetPassword.as_view(), name='reset-password'),
-  path('change-password', ChangePassword.as_view(), name='change-password'),
+  path('signup', SignUp.as_view(), name='signup'),
 ]
