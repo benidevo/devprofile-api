@@ -50,7 +50,7 @@ class CustomUser(AbstractUser):
   is_recruiter = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=False)
-  otp_code = models.CharField(max_length=50)
+  token = models.CharField(max_length=50)
   role = models.CharField(max_length=50, default='developer')
   date_joined = models.DateTimeField(default=timezone.now)
 

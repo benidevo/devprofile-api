@@ -17,8 +17,12 @@ def generate_key(num_digit):
 
 
 class SignUp(generics.GenericAPIView):
+    '''
+    Register a new user.
+    To register a recruiter, exclude first_name and last_name fields and set role to 'recruiter'. 
+    To register a developer, exclude company field and set role to 'developer'. 
+    '''
     permission_classes = (permissions.AllowAny,)
-    """Create new user in the system"""
     serializer_class = SignUpSerializer
 
     def post(self, request):

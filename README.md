@@ -50,3 +50,28 @@ Kindly ensure that you are in the root directory before running the following co
 ## Start server
 
     python manage.py runserver
+
+
+# API Expected Response
+
+## success response
+
+    {
+        "message": "success",
+        "data": {
+            "<string>: <string>,
+            <string>: <string>,
+            <string>: <string>
+        },
+        "errors": null
+    }
+
+# error response
+
+    {
+        "message": "failure",
+        "data": null,
+        "errors": {
+            "message": <string>
+        }
+    }

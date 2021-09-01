@@ -1,14 +1,16 @@
 from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import status, generics
 
 from utils.response import Response
 from authentication.models import CustomUser
-from authentication.serializers.signup_serializer import SignUpSerializer
+from authentication.serializers.login_serializer import LoginSerializer
 
-class Login(APIView):
+class Login(generics.GenericAPIView):
+  '''
+    Authenticate a user
+  '''
 
-  serializer_class = SignUpSerializer
+  serializer_class = LoginSerializer
 
   def post(self, request):
     user_data = request.data

@@ -1,11 +1,13 @@
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import status, generics
 
 from utils.response import Response
 from authentication.serializers.change_password import ChangePasswordSerializer
 from authentication.models import CustomUser
 
-class ChangePassword(APIView):
+class ChangePassword(generics.GenericAPIView):
+  '''
+  Change user password
+  '''
   serializer_class = ChangePasswordSerializer
 
   def post(self, request):
