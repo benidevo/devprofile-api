@@ -1,6 +1,5 @@
 from authentication.models import CustomUser
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import status, generics
 from utils.Utils import Mailer
 
 from utils.response import Response
@@ -8,7 +7,10 @@ from authentication.serializers.reset_password import ResetPasswordSerializer
 from authentication.serializers.change_password import ChangePasswordSerializer
 from authentication.views.signup import generate_key
 
-class ResetPassword(APIView):
+class ResetPassword(generics.GenericAPIView):
+  '''
+  Generates token to reset user password.
+  '''
   serializer_class = ResetPasswordSerializer
 
   def post(self, request):

@@ -6,4 +6,4 @@ class VerifyTokenSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = CustomUser
-    fields = ('token')
+    fields = ('email', 'token',)
