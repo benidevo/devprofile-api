@@ -36,7 +36,7 @@ class Login(generics.GenericAPIView):
 
     user_email = user.email
     user_full_name = f'{user.first_name} {user.last_name}' if not user.company_name else user.company_name
-    token = user.otp_code
+    token = user.token
     
     return Response(data=dict(token=token, user={'name': user_full_name, 'email': user_email}), status=status.HTTP_200_OK)
     

@@ -26,7 +26,7 @@ class ResetPassword(generics.GenericAPIView):
     
     token = generate_key(6)
     user.is_active = False
-    user.otp_code = token
+    user.token = token
     user.save()
 
     # send user email

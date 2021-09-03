@@ -35,6 +35,9 @@ class SignUp(generics.GenericAPIView):
         email = user_data.get('email', '')
         password = user_data.get('password', '')
 
+        if role not in ['developer', 'recruiter']:
+            return Response(errors={'message': 'role must be set to either \'developer\' or \'recruiter\'.'}, status=status.HTTP_400_BAD_REQUEST)
+
         if not serializer.is_valid():
             return Response(errors=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -44,34 +47,50 @@ class SignUp(generics.GenericAPIView):
         # save user insrance
         user = get_user_model().objects.create(first_name=first_name, last_name=last_name, email=email, role=role.lower(), company_name=company_name, password=password)
         user.set_password(password)
-        user.otp_code = otp
+        user.token = otp
         if user.role == 'recruiter':
             user.is_recruiter = True
             user.is_developer = False
 
-            recruiter = RecruiterProfile.objects.create(user=user)
-            recruiter.save()
+            recruiter_profile = RecruiterProfile.objects.create(user=user, email=email)
+            recruiter_profile.save()
             user.save()
             
             email_text = 'Thank you for registering with us. \n\n We are pleased to have you.'
-            email_body = f'''Hi {first_name or company_name}, {email_text} Kindly verify your account with this token:  {otp}'''
+            email_body = f'''Hi {company_name}, {email_text} Kindly verify your account with this token:  {otp}'''
             data = {'email_body': email_body, 'to_email': [
                 email], 'email_subject': 'Account Verification'}
 
-            # Send email
-            is_email_sent = Mailer.send_email(data)
-            if not is_email_sent:
-                return Response(
-                    errors=dict(
-                        email_error='Email service is unavailable, please try later'),
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE
-                )
+            # # Send email
+    
+            # is_email_sent = Mailer.send_email(data)
+            # print(is_email_sent)
+            
+            # if not is_email_sent:
+            #     user.delete()
+            #     return Response(
+            #         errors=dict(email_error='Email service is unavailable, please try later'),
+            #         status=status.HTTP_503_SERVICE_UNAVAILABLE
+            #     )
 
-            return Response(data=dict(company_name=company_name, email=email, otp=otp), status=status.HTTP_201_CREATED)
-
-        developer = DeveloperProfile.objects.create(user=user)
+            return Response(data=dict(company_name=company_name, email=email, token=otp), status=status.HTTP_201_CREATED)
+       
+        developer = DeveloperProfile.objects.create(user=user, email=email)
         developer.save()
         user.save()
-
-        return Response(data=dict(first_name=first_name, last_name=last_name, email=email, otp=otp), status=status.HTTP_201_CREATED)
         
+        email_text = 'Thank you for registering with us. \n\n We are pleased to have you.'
+        email_body = f'''Hi {first_name}, {email_text} Kindly verify your account with this token:  {otp}'''
+        data = {'email_body': email_body, 'to_email': [
+            email], 'email_subject': 'Account Verification'}
+
+        # Send email
+        # is_email_sent = Mailer.send_email(data)
+        # if not is_email_sent:
+        #     user.delete()
+        #     return Response(
+        #         errors=dict(email_error='Email service is unavailable, please try later'),
+        #         status=status.HTTP_503_SERVICE_UNAVAILABLE
+        #     )
+
+        return Response(data=dict(first_name=first_name, last_name=last_name, email=email, token=otp), status=status.HTTP_201_CREATED)
