@@ -31,7 +31,7 @@ class ChangePassword(generics.GenericAPIView):
     except: 
       return Response(errors={'message': 'user with provided email does not exist'}, status=status.HTTP_404_NOT_FOUND)
     
-    if not user.otp_code == token:
+    if not user.token == token:
       return Response(errors={'message': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
     user.set_password(password)
