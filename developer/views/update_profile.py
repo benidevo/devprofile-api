@@ -1,4 +1,3 @@
-from this import d
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from rest_framework import status, generics, permissions
@@ -6,10 +5,10 @@ from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 from utils.response import Response
 from developer.permissions import IsOwnerOrReadOnly
 
-from developer.models import DeveloperProfile
+from developer.models import DeveloperProfile, Project
 from authentication.models import CustomUser
 from developer.serializers.update_profile import DeveloperProfileSerializer
-from developer.serializers.retrieve_developers import RetrieveDevelopersSerializer
+from developer.serializers.retrieve_developers import RetrieveDevelopersSerializer, ProjectSerializer
 
 class DeveloperProfileView(generics.GenericAPIView):
   
@@ -28,6 +27,7 @@ class DeveloperProfileView(generics.GenericAPIView):
     phone_number = user_data.get('phone_number', '')    
     projects = user_data.get('projects', '')  
     languages = user_data.get('languages', '')
+    experience = user_data.get('experience', '')
 
     if not serializer.is_valid():
       return Response(errors=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
@@ -45,6 +45,8 @@ class DeveloperProfileView(generics.GenericAPIView):
       developerProfile.projects = projects
     if languages != '':
       developerProfile.languages = languages
+    if experience != '':
+      developerProfile.experience = experience
     
     developerProfile.save()
 
@@ -76,3 +78,4 @@ class DeveloperProfileView(generics.GenericAPIView):
     serializer = RetrieveDevelopersSerializer(developers, many=True)
     if serializer.is_valid:
       return Response(data={'developers': serializer.data}, status=status.HTTP_200_OK)
+      
