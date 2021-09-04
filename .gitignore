@@ -68,7 +68,7 @@ coverage.xml
 cover/
 static/
 staticfiles/
-migrations/
+; migrations/
 mediafiles/
 
 # Translations
