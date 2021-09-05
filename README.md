@@ -32,10 +32,6 @@ Kindly ensure that you are in the root directory before running the following co
 
     pip install -r requirements.txt
 
-## Navigate to the source directory
-
-    cd src
-
 ## Make migrations
 
     python manage.py makemigrations
@@ -43,10 +39,6 @@ Kindly ensure that you are in the root directory before running the following co
 ## Migrate apps and database
 
     python manage.py migrate
-
-## Run Tests
-
-    python manage.py test
 
 ## Start server
 

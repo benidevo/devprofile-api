@@ -16,6 +16,24 @@ class DeveloperProfileView(generics.GenericAPIView):
   parser_classes = (MultiPartParser, JSONParser, FormParser)
   permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
+
+  def get_queryset(self):
+    queryset = DeveloperProfile.objects.all()
+
+    # search title by text
+    dev = self.request.query_params.get('dev', None)
+    if dev is not None:
+      queryset = queryset.filter(user__first_name__iexact=dev)
+      return queryset
+
+    # filter by type
+    stack = self.request.query_params.get('stack', None)
+    if stack is not None:
+      queryset = queryset.filter(stack=stack.upper())
+      return queryset
+
+    return queryset
+
   def put(self, request):
     '''
     Update developer profile 
@@ -25,9 +43,9 @@ class DeveloperProfileView(generics.GenericAPIView):
     about = user_data.get('about', '')    
     avatar = user_data.get('avatar', '')    
     phone_number = user_data.get('phone_number', '')    
-    projects = user_data.get('projects', '')  
     languages = user_data.get('languages', '')
     experience = user_data.get('experience', '')
+    stack = user_data.get('stack', '')
 
     if not serializer.is_valid():
       return Response(errors=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
@@ -36,17 +54,20 @@ class DeveloperProfileView(generics.GenericAPIView):
       developerProfile = DeveloperProfile.objects.get(user=request.user)
     except:
       return Response(errors={'message': 'User does not exist'}, status=status.HTTP_204_NO_CONTENT)
-    
-    if about != '':
+
+
+    if about:
       developerProfile.about = about
-    if phone_number != '':
+    if phone_number:
       developerProfile.phone_number = phone_number
-    if projects != '':
-      developerProfile.projects = projects
-    if languages != '':
+    if languages:
       developerProfile.languages = languages
-    if experience != '':
+    if experience:
       developerProfile.experience = experience
+    if stack:
+      developerProfile.stack = stack.upper()
+    
+    developerProfile.user = request.user
     
     developerProfile.save()
 
@@ -66,16 +87,32 @@ class DeveloperProfileView(generics.GenericAPIView):
       return Response(data={'message': avatar_url}, status=status.HTTP_401_UNAUTHORIZED)
 
     # return Response(errors={'message': 'Authentication failed'}, status=status.HTTP_401_UNAUTHORIZED)
-
-# class AllDevs(generics.GenericAPIView):
-#   serializer_class = RetrieveDevelopersSerializer
-
   def get(self, request):
     '''
-    retrieve all developers
+    Retrieve a list of all the developers \n \nQuery params include:\n?dev=<developer's first name> \n?stack=<developer's stack>
     '''
-    developers = DeveloperProfile.objects.all()
+    developers = self.get_queryset()
     serializer = RetrieveDevelopersSerializer(developers, many=True)
     if serializer.is_valid:
       return Response(data={'developers': serializer.data}, status=status.HTTP_200_OK)
-      
+
+
+
+class DeveloperProfileByIDView(generics.GenericAPIView):
+  
+  serializer_class = DeveloperProfileSerializer
+  parser_classes = (MultiPartParser, JSONParser, FormParser)
+  permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+
+  def get(self, request, id):
+    '''
+    Retrieve a developer profile with a provided ID
+    '''
+    try:
+      developer = DeveloperProfile.objects.get(pk=id)
+    except:
+      return Response(errors={'developers': 'Found no developer with the provided ID'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = RetrieveDevelopersSerializer(developer)
+    if serializer.is_valid:
+      return Response(data={'developer': serializer.data}, status=status.HTTP_200_OK)

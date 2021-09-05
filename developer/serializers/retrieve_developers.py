@@ -17,9 +17,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class RetrieveDevelopersSerializer(serializers.ModelSerializer):
   user = UserSerializer()
-  projects = ProjectSerializer(read_only=True, many=True)
+  projects = ProjectSerializer(many=True)
 
   class Meta:
     model = DeveloperProfile
-    fields = ('id', 'about', 'languages', 'experience', 'projects', 'phone_number', 'email', 'user',)
+    fields = ('id', 'about', 'languages', 'experience', 'projects', 'phone_number', 'email', 'stack', 'user',)
  

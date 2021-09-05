@@ -27,6 +27,7 @@ class DeveloperProfile(models.Model):
   phone_number = models.CharField(max_length=20)
   experience = models.CharField(max_length=50, null=True)
   email = models.EmailField(unique=True)
+  stack = models.CharField(max_length=100, null=True)
 
   def __str__(self):
     return f'{self.user.first_name} {self.user.last_name}\'s Profile'
@@ -34,10 +35,10 @@ class DeveloperProfile(models.Model):
 
 class Project(models.Model):
   id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-  title = models.CharField(max_length=100)
-  description = models.TextField()
-  url = models.URLField()
-  image = models.FileField()
+  title = models.CharField(max_length=100, null=True)
+  description = models.TextField(null=True)
+  url = models.URLField(null=True)
+  image = models.FileField(null=True, blank=True)
   developer = models.ForeignKey(DeveloperProfile, null=True, on_delete=models.DO_NOTHING, related_name='projects')
 
   def __str__(self):
