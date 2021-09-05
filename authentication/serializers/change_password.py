@@ -6,4 +6,4 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
   password = serializers.CharField(max_length=9)
   class Meta:
     model = CustomUser
-    fields = ('token', 'password', 'email')
+    fields = ('otp', 'password', 'email')

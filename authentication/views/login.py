@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import status, generics
+from rest_framework.authtoken.models import Token
 
 from utils.response import Response
 from authentication.models import CustomUser
@@ -20,23 +21,20 @@ class Login(generics.GenericAPIView):
     password = user_data.get('password', '')
 
     if email == '' or password == '':
-      return Response(errors={'invalid_credentials': 'Please provide both email and password'}, status=status.HTTP_400_BAD_REQUEST)
+      return Response(errors={'invalid_credentials': 'Please provide both email and password'}, status=status.HTTP_401_UNAUTHORIZED)
     
     try:
       user = CustomUser.objects.get(email=email)
     except:
-      return Response(errors={'message': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+      return Response(errors={'message': 'User with the provided email does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
     
     if not user.is_active:
       return Response(errors={'message': 'Please verify your account'}, status=status.HTTP_400_BAD_REQUEST)
     
     auth_user = authenticate(username=email, password=password)
     if not auth_user:
-      return Response(errors={'message': 'invalid password'}, status=status.HTTP_404_NOT_FOUND)
+      return Response(errors={'message': 'invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    user_email = user.email
-    user_full_name = f'{user.first_name} {user.last_name}' if not user.company_name else user.company_name
-    token = user.token
-    
-    return Response(data=dict(token=token, user={'name': user_full_name, 'email': user_email}), status=status.HTTP_200_OK)
+    token, _ = Token.objects.get_or_create(user=auth_user)
+    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
     

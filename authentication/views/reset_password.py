@@ -9,7 +9,7 @@ from authentication.views.signup import generate_key
 
 class ResetPassword(generics.GenericAPIView):
   '''
-  Generates token to reset user password.
+  Generates otp to reset user password.
   '''
   serializer_class = ResetPasswordSerializer
 
@@ -24,13 +24,13 @@ class ResetPassword(generics.GenericAPIView):
       return Response(errors={'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
     
     
-    token = generate_key(6)
+    otp = generate_key(6)
     user.is_active = False
-    user.token = token
+    user.otp = otp
     user.save()
 
     # send user email
-    email_body = f'''We are sorry you can't access your account. Kindly reset your password with this token:  {token}'''
+    email_body = f'''We are sorry you can't access your account. Kindly reset your password with this otp:  {otp}'''
     data = {'email_body': email_body, 'to_email': [
       email], 'email_subject': 'Reset Password'}
 
@@ -42,5 +42,5 @@ class ResetPassword(generics.GenericAPIView):
               email_error='Email service is unavailable, please try later'),
           status=status.HTTP_503_SERVICE_UNAVAILABLE
       )
-    return Response(data=dict(email=email, token=token), status=status.HTTP_200_OK)
+    return Response(data=dict(email=email, otp=otp), status=status.HTTP_200_OK)
 

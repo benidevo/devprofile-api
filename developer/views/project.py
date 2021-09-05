@@ -1,6 +1,3 @@
-from functools import partial
-import re
-from developer import serializers
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from rest_framework import status, generics, permissions
@@ -18,7 +15,7 @@ class ProjectView(generics.GenericAPIView):
 
   serializer_class = ProjectSerializer
   parser_classes = (MultiPartParser, JSONParser, FormParser)
-  # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+  permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
   def post(self, request):
     '''
@@ -32,7 +29,7 @@ class ProjectView(generics.GenericAPIView):
     image = user_data.get('image', '')
 
     if not serializer.is_valid():
-      return Response(errors=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+      return Response(errors=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     try:
       developer = DeveloperProfile.objects.get(user=request.user)
@@ -41,11 +38,6 @@ class ProjectView(generics.GenericAPIView):
 
     Project.objects.create(developer=developer, title=title, description=description, url=url)
     return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-  
-    
-
-
-
 
   def get(self, request):
     '''
@@ -59,18 +51,16 @@ class ProjectView(generics.GenericAPIView):
     try:
       projects = Project.objects.filter(developer=developer)
     except:
-      return Response(errors={'me': ''}, status=status.HTTP_401_UNAUTHORIZED)
-    print(projects)
+      return Response(errors={'message': 'Unable to fetch list of projects'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     serializer = self.serializer_class(projects, many=True).data
-    
     return Response(data={'projects': serializer}, status=status.HTTP_200_OK)
 
 
-class EditProjectView(generics.GenericAPIView):
-
+class EditAndDeleteProjectView(generics.GenericAPIView):
   serializer_class = ProjectSerializer
   parser_classes = (MultiPartParser, JSONParser, FormParser)
-  # permission_classes = (
+  permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
   def put(self, request, id):
     '''
