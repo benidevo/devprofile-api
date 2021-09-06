@@ -36,7 +36,7 @@ class ProjectView(generics.GenericAPIView):
     except:
       return Response(errors={'message': 'Invalid Authentication Credentials. You\'r not a registered user.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    Project.objects.create(developer=developer, title=title, description=description, url=url)
+    Project.objects.create(developer=developer, title=title, description=description, url=url, image=image)
     return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
   def get(self, request):
@@ -71,6 +71,8 @@ class EditAndDeleteProjectView(generics.GenericAPIView):
     url = user_data.get('url', '')
     title = user_data.get('title', '')
     description = user_data.get('description', '')
+    image = user_data.get('image', '')
+  
 
     if not serializer.is_valid():
       return Response(errors=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
@@ -86,6 +88,9 @@ class EditAndDeleteProjectView(generics.GenericAPIView):
       project.title = title
     if description:
       project.description = description
+    if image:
+      project.image = image
+  
     project.save()
 
     return Response(data=serializer.data, status=status.HTTP_200_OK)
