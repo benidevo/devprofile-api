@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', '@07*^v$w)1_tt(thg(e8n**vm#edxz%7n&t1ksw%2#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = ['devprofile-app.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -151,7 +151,7 @@ if USE_S3:
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-    AWS_DEFAULT_ACL = 'public-read'
+    AWS_DEFAULT_ACL = None
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     # s3 static settings
@@ -168,10 +168,9 @@ else:
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-MEDIA_URL = '/mediafiles/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -184,8 +183,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'optimaldevss@gmail.com'
-EMAIL_HOST_PASSWORD = 'Test4321'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url

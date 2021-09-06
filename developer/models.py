@@ -21,7 +21,7 @@ avatar_path = GenerateProfileImagePath()
 class DeveloperProfile(models.Model):
   id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
   user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='developer_user')
-  avatar = models.FileField(upload_to=avatar_path)
+  avatar = models.FileField(upload_to='developer/', null=True, blank=True)
   about = models.TextField()
   languages = models.TextField()
   phone_number = models.CharField(max_length=20)
@@ -37,8 +37,8 @@ class Project(models.Model):
   id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
   title = models.CharField(max_length=100, null=True)
   description = models.TextField(null=True)
-  url = models.URLField(null=True)
-  image = models.FileField(null=True, blank=True)
+  url = models.URLField(blank=True, null=True)
+  image = models.FileField(upload_to='developer/project/', null=True, blank=True)
   developer = models.ForeignKey(DeveloperProfile, null=True, on_delete=models.DO_NOTHING, related_name='projects')
 
   def __str__(self):
