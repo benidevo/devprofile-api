@@ -5,6 +5,8 @@ from rest_framework.authtoken.models import Token
 from utils.response import Response
 from authentication.models import CustomUser
 from authentication.serializers.login_serializer import LoginSerializer
+from utils.Utils import Mailer
+from utils.generate_otp import generate_key
 
 class Login(generics.GenericAPIView):
   '''
@@ -29,12 +31,36 @@ class Login(generics.GenericAPIView):
       return Response(errors={'message': 'User with the provided email does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
     
     if not user.is_active:
-      return Response(errors={'message': 'Please verify your account'}, status=status.HTTP_400_BAD_REQUEST)
+      # generate new otp
+      new_otp = generate_key(6)
+      user.otp = new_otp
+      user.save()
+
+      email_text = '\n\nIt seems you are yet to activate your account.'
+      email_body = f'''Hello, {email_text} Kindly verify your account with this otp:  {user.otp}'''
+      data = {'email_body': email_body, 'to_email': [
+        email], 'email_subject': 'Account Verification'}
+
+      # Send email
+      is_email_sent = Mailer.send_email(data)
+      if not is_email_sent:
+        return Response(
+          errors=dict(email_error='Email service is unavailable, please try later'),
+          status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+      return Response(errors={'message': 'Please verify your account before you login', 'otp': user.otp}, status=status.HTTP_401_UNAUTHORIZED)
     
     auth_user = authenticate(username=email, password=password)
     if not auth_user:
       return Response(errors={'message': 'invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
 
     token, _ = Token.objects.get_or_create(user=auth_user)
-    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+    user_data = {
+      'first_name': user.first_name or None,
+      'last_name': user.last_name or None,
+      'company_name': user.company_name or None,
+      'email': user.email,
+      'role': user.role
+    }
+    return Response(data={'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
     
