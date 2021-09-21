@@ -1,4 +1,3 @@
-import random
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status
 from authentication.serializers.signup_serializer import SignUpSerializer
@@ -6,14 +5,7 @@ from utils.Utils import Mailer
 from developer.models import DeveloperProfile
 from recruiter.models import RecruiterProfile
 from utils.response import Response
-
-
-def generate_key(num_digit):
-    """Generate key using user email and random str"""
-    min_val = 10 ** (num_digit - 1)
-    max_val = (10 ** num_digit) - 1
-    otp = random.randint(min_val, max_val)
-    return otp
+from utils.generate_otp import generate_key
 
 
 class SignUp(generics.GenericAPIView):
