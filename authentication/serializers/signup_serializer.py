@@ -12,3 +12,4 @@ class SignUpSerializer(serializers.ModelSerializer):
     model = CustomUser
     fields = ('first_name', 'last_name', 'company_name', 'email', 'role', 'password',)
     extra_kwargs = {"role": {"required": True}}
+    

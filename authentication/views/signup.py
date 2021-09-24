@@ -1,6 +1,8 @@
+import re
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status
 from authentication.serializers.signup_serializer import SignUpSerializer
+from authentication.models import CustomUser
 from utils.Utils import Mailer
 from developer.models import DeveloperProfile
 from recruiter.models import RecruiterProfile
@@ -29,6 +31,20 @@ class SignUp(generics.GenericAPIView):
 
         if role not in ['developer', 'recruiter']:
             return Response(errors={'message': 'role must be set to either \'developer\' or \'recruiter\'.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        if not re.fullmatch(regex, email):
+            return Response(errors={'message': 'provide a valid email address'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = CustomUser.objects.get(email=email)
+            if not user.is_active:
+                user.delete()
+                return Response(errors={'message': 'Previous account detected. Register again after 2 minutes'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            pass
+
+
 
         if not serializer.is_valid():
             return Response(errors=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
