@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -18,10 +19,10 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('authentication.urls')),
-    path('api/v1/developer/', include('developer.urls')),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('admin/', csrf_exempt(admin.site.urls)),
+    path('api/v1/auth/', csrf_exempt(include('authentication.urls'))),
+    path('api/v1/developer/', csrf_exempt(include('developer.urls'))),
+    url(r'^api-auth/', csrf_exempt(include('rest_framework.urls', namespace='rest_framework'))),
     url(r'^$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
