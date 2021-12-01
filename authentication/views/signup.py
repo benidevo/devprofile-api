@@ -64,19 +64,19 @@ class SignUp(generics.GenericAPIView):
             recruiter_profile.save()
             user.save()
             
-            email_text = 'Thank you for registering with us. \n\n We are pleased to have you.'
-            email_body = f'''Hi {company_name}, {email_text} Kindly verify your account with this otp:  {new_otp}'''
-            data = {'email_body': email_body, 'to_email': [
-                email], 'email_subject': 'Account Verification'}
+            # email_text = 'Thank you for registering with us. \n\n We are pleased to have you.'
+            # email_body = f'''Hi {company_name}, {email_text} Kindly verify your account with this otp:  {new_otp}'''
+            # data = {'email_body': email_body, 'to_email': [
+            #     email], 'email_subject': 'Account Verification'}
 
-            # Send email
-            is_email_sent = Mailer.send_email(data)
-            if not is_email_sent:
-                user.delete()
-                return Response(
-                    errors=dict(email_error='Email service is unavailable, please try later'),
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE
-                )
+            # # Send email
+            # is_email_sent = Mailer.send_email(data)
+            # if not is_email_sent:
+            #     user.delete()
+            #     return Response(
+            #         errors=dict(email_error='Email service is unavailable, please try later'),
+            #         status=status.HTTP_503_SERVICE_UNAVAILABLE
+            #     )
 
             return Response(data=dict(company_name=company_name, email=email, otp=new_otp), status=status.HTTP_201_CREATED)
        
